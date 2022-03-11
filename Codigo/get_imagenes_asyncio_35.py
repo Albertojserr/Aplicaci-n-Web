@@ -132,8 +132,8 @@ if __name__ == '__main__':
     web_page_uri = 'http://www.formation-python.com/'
     loop = asyncio.get_event_loop()
     print(timeit('loop.run_until_complete(get_images(web_page_uri))',
-                 number=10,
-                 setup="from __main__ import get_images, web_page_uri, loop"))
+                number=10,
+                setup="from __main__ import get_images, web_page_uri, loop"))
     loop.close()
 
 # Tiempo evaluado: 4.75s

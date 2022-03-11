@@ -111,7 +111,7 @@ async def get_images_uri(page_uri):
 
 
 def parse_html_page_and_get_all_images(page_uri):
-    images_uri = get_images_uri('http://www.formation-python.com/')
+    images_uri = get_images_uri(page_uri)
     #
     # Recuperación de las imágenes
     #
@@ -124,8 +124,8 @@ if __name__ == '__main__':
     print('--- Starting standard download ---')
     web_page_uri = 'http://www.formation-python.com/'
     print(timeit('parse_html_page_and_get_all_images(web_page_uri)',
-                 number=10,
-                 setup="from __main__ import parse_html_page_and_get_all_images, web_page_uri"))
+                number=10,
+                setup="from __main__ import parse_html_page_and_get_all_images, web_page_uri"))
 
 # Tiempo evaluado: 4.75s
 
