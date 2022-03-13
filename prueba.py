@@ -23,7 +23,7 @@ from pyramid.view import view_config
     renderer='templates/home.jinja2'
 )
 def home(request):
-    return {"greet": 'Bienvenido', "name": 'Pepe',"saludos":'Hola',"prueba":'Prueba'}
+    return {"greet": 'Bienvenido', "name": 'Raúl',"saludos":'Hola',"prueba":'Prueba'}
 
 if __name__ == '__main__':
     with Configurator() as config:
