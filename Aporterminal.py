@@ -1,0 +1,11 @@
+#vamos a pedir por teclado los datos y los guardamos en variables
+DNI= input("DNI:")
+nombre= input("Nombre:")
+apellidos= input("Apellidos:")
+ciudad= input("Ciudad:")
+direccion= input("Dirección:")
+provincia= input("Provincia:")
+comunidad_auotonoma= input("Comunidad autonoma:")
+codigo= input("Código:")
+asignatura= input("Asignatura:")
+nota=input("Nota:")
