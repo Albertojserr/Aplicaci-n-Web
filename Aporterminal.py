@@ -1,11 +1,16 @@
+from lib.ConexAlchemy import ConexionBD
 #vamos a pedir por teclado los datos y los guardamos en variables
-DNI= input("DNI:")
+Dni= input("DNI:")
 nombre= input("Nombre:")
 apellidos= input("Apellidos:")
+comunidad_autonoma= input("Comunidad autonoma:")
+provincia= input("Provincia:")
 ciudad= input("Ciudad:")
 direccion= input("Dirección:")
-provincia= input("Provincia:")
-comunidad_auotonoma= input("Comunidad autonoma:")
-codigo= input("Código:")
 asignatura= input("Asignatura:")
-nota=input("Nota:")
+codigo= int(input("Código de la asignatura:"))
+nota=float(input("Nota:"))
+
+conexion = ConexionBD()
+conexion.conectar(comunidad_autonoma,provincia,ciudad)
+conexion.cerrar()

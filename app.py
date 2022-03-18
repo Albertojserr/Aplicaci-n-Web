@@ -88,7 +88,7 @@ class MySchema(MappingSchema):
                     description = 'Nombre del alumno')
     apellidos = SchemaNode(String(),
                     description = 'Apellidos del alumno')
-    DNI = SchemaNode(String(),
+    Dni = SchemaNode(String(),
                     description = 'DNI del alumno')
     comunidad = SchemaNode(String(), description = 'Comunidad Autónoma', widget = widget.Select2Widget(values=occaa, tags=True))
 
