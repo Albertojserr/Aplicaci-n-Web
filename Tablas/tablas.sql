@@ -25,7 +25,6 @@ apellidos text not null,
 nombre text not null,
 direccion text not null,
 ciudad smallint references Ciudad(codigo) not null,
-bnombre varchar(100) not null
 );
 
 create table  Asignatura (
