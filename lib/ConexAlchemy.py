@@ -57,7 +57,7 @@ class Alumno(Base):
     apellidos = Column(String(100))
     nombre = Column(String(100))
     direccion = Column(String(100))
-    Ciudad=Column(SmallInteger(), ForeignKey('ciudad.codigo'))
+    ciudad=Column(SmallInteger(), ForeignKey('ciudad.codigo'))
 
 class Asignatura(Base):
     # Nombre de la tabla
@@ -66,7 +66,6 @@ class Asignatura(Base):
     # Estructura de la tabla
     codigo = Column(Integer(), primary_key=True)
     nombre = Column(String(100))
-    bnombre = Column(String(100))
 
 class Alumno_Asignatura(Base):
     # Nombre de la tabla
@@ -76,7 +75,6 @@ class Alumno_Asignatura(Base):
     codigo = Column(Integer(),ForeignKey('asignatura.codigo'), primary_key=True)
     dni = Column(String(9),ForeignKey('alumno.dni'))
     nota =Column(Float())
-    bnombre = Column(String(100))
 
 class ConexionBD():
     def __init__(self):
@@ -105,6 +103,24 @@ class ConexionBD():
     def rAsignatura(self):
         return self.session.query(Asignatura).order_by(Asignatura.codigo).all()
 
+    def rAsignaturasAlumno(self, alumno):
+        return self.session.query(Alumno_Asignatura.nota, Asignatura.codigo, Asignatura.nombre).join(Asignatura).order_by(Asignatura.codigo).all()
+
+    def buscarAsignaturaAlumno(self, dni, asignatura):
+        lista=self.session.query(Alumno_Asignatura).filter_by(dni=dni, codigo=asignatura).all()
+        if len(lista)>0:
+            return lista[0]
+        else:
+            return None
+
+    def buscarAlumno(self, dni):
+        lista=self.session.query(Alumno).filter_by(dni=dni).all()
+        if len(lista)>0:
+            return lista[0]
+        else:
+            return None
+
+
     def buscarComunidad(self,Bnombre):
         lista=self.session.query(CAutonoma).filter_by(bnombre=Bnombre).all()
         if len(lista)>0:
@@ -123,11 +139,21 @@ class ConexionBD():
             return lista[0]
         else:
             return None
-    def conectar(self,comunidad, provincia, ciudad):
+
+    def buscarAsignatura(self,codigo):
+        lista=self.session.query(Asignatura).filter_by(codigo=codigo).all()
+        if len(lista)>0:
+            return lista[0]
+        else:
+            return None
+
+
+    def conectar(self,dni, nombre, apellidos, comunidad, provincia, ciudad, direccion, codasignatura, nota):
         bcomunidad = normaliza(comunidad)
         bprovincia = normaliza(provincia)
         bciudad = normaliza(ciudad)
         oComunidad = self.buscarComunidad(bcomunidad)
+        dni=dni.upper()
         if oComunidad == None:
             self.añadir(CAutonoma(nombre=comunidad,bnombre=bcomunidad))
             oComunidad = self.buscarComunidad(bcomunidad)
@@ -135,67 +161,17 @@ class ConexionBD():
         if oProvincia == None:
             self.añadir(Provincia(nombre=provincia,cautonoma=oComunidad.codigo,bnombre=bprovincia))
             oProvincia = self.buscarProvincia(bprovincia)
-        oCiudad = self.buscarProvincia(bciudad)
+        oCiudad = self.buscarCiudad(bciudad)
         if oCiudad == None:
             self.añadir(Ciudad(nombre=ciudad,provincia=oProvincia.codigo,bnombre=bciudad))
             oCiudad = self.buscarCiudad(bciudad)
+        oAlumno = self.buscarAlumno(dni)
+        if oAlumno == None:
+            self.añadir(Alumno(dni=dni, nombre=nombre, apellidos=apellidos, ciudad=oCiudad.codigo, direccion=direccion))
+            oAlumno = self.buscarAlumno(dni)
 
-
-
-''' 
-
-connect_args = {
-    'user': 'usrpractica',
-    'password': 'pw2203',
-    'database': 'dbpractica',
-    'host': '127.0.0.1',
-    'port': 5432
-}
-# Inicializar la conexión de la base de datos
-engine = create_engine('postgresql+psycopg2://',connect_args=connect_args)
-
-# Crear tipo de sesión
-Session = sessionmaker(bind=engine)
-
-# Crear objeto de sesión
-session = Session()
- '''
-
-''' sComunidad = "Cataluña"
-bComunidad = normaliza(sComunidad)
-
-conexion = ConexionBD()
-
-oComunidad = conexion.buscarComunidad(bComunidad)
-if oComunidad == None:
-    conexion.añadir(CAutonoma(nombre=sComunidad,bnombre=bComunidad))
-    oComunidad = conexion.buscarComunidad(bComunidad)
-
-print('Nombre:', oComunidad.nombre + ' Codigo: ' + str(oComunidad.codigo))
-
-sProvincia="Girona"
-bProvincia= normaliza(sProvincia)
-oProvincia = conexion.buscarProvincia(bProvincia)
-if oProvincia == None:
-    conexion.añadir(Provincia(nombre=sProvincia,cautonoma=oComunidad.codigo,bnombre=bProvincia))
-    oProvincia = conexion.buscarProvincia(bProvincia)
-
-
-print('Nombre:', oProvincia.nombre + ' Codigo: ' + str(oProvincia.codigo))
-conexion.cerrar() '''
-#Comunidad="murcia"
-# Crear objeto de usuario
-#new_CAutonoma = CAutonoma(nombre="Murcia",bnombre=Comunidad)
-
-# Agregar a sesión
-#session.add(new_CAutonoma)
-
-# Enviar a la base de datos
-#session.commit()
-
-# Cree una consulta de consulta, filtre la condición donde está, y finalmente llame a one () para devolver solo filas, si llama a all () para devolver todas las filas
-#user = session.query(CAutonoma).filter(CAutonoma.bnombre=="Andalucia").all()
-#print('Nombre:', user.nombre + ' Codigo: ' + str(user.codigo))
-
-# Cerrar sesión
-#session.close()
+        oasignatura = self.buscarAsignatura(codasignatura)
+        if oasignatura != None:
+            oasignaturaalumno = self.buscarAsignaturaAlumno(dni, codasignatura)
+            if oasignaturaalumno == None:
+                self.añadir(Alumno_Asignatura(dni=dni, codigo=oasignatura.codigo, nota=nota))

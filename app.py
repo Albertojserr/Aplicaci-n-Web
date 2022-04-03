@@ -23,10 +23,6 @@ from deform import (
 
 from deform.widget import OptGroup
 
-''' from lib.conexionbd import ConexionBD
-from lib.conexionbd import Ciudad
-from lib.conexionbd import Provincia
-from lib.conexionbd import Comunidad '''
 from lib.ConexAlchemy import ConexionBD
 here = os.path.dirname(os.path.abspath(__file__))
 
@@ -35,11 +31,15 @@ conexion = ConexionBD()
 aComunidades = conexion.rComunidades()
 aProvincias = conexion.rProvincia()
 aCiudades = conexion.rCiudad()
+aAsignaturas = conexion.rAsignatura()
 conexion.cerrar()
 
 occaa = [ ['0', '- Selecciona -'] ]
 gprov = [ ['0', '- Selecciona -'] ]
 gciud = [ ['0', '- Selecciona -'] ]
+oasig = [ ['0', '- Selecciona -'] ]
+
+
 for comunidad in aComunidades:
     occaa.append([comunidad.bnombre, comunidad.nombre])
 
@@ -74,6 +74,8 @@ if aux != "":
     gciud.append(OptGroup(aux, *grupo))
 
 
+for asignatura in aAsignaturas:
+    oasig.append([asignatura.codigo, asignatura.nombre])
 
 class DateSchema(MappingSchema):
     year = SchemaNode(Integer())
@@ -88,13 +90,19 @@ class MySchema(MappingSchema):
                     description = 'Nombre del alumno')
     apellidos = SchemaNode(String(),
                     description = 'Apellidos del alumno')
-    Dni = SchemaNode(String(),
+    dni = SchemaNode(String(),
                     description = 'DNI del alumno')
     comunidad = SchemaNode(String(), description = 'Comunidad Autónoma', widget = widget.Select2Widget(values=occaa, tags=True))
 
     provincia = SchemaNode(String(), description = 'Provincia', widget = widget.Select2Widget(values=gprov, tags=True))
 
     ciudad = SchemaNode(String(), description = 'Ciudad', widget = widget.Select2Widget(values=gciud, tags=True))
+
+    direccion = SchemaNode(String(), description = 'Dirección del alumno')
+
+    asignatura = SchemaNode(String(), description = 'Asignatura', widget = widget.Select2Widget(values=oasig))
+
+    nota = SchemaNode(Integer(), description = 'Nota del alumno (0-100)' )
 
 def form_view(request):
     schema = MySchema()
@@ -111,7 +119,7 @@ def form_view(request):
             template_values['form'] = e.render()
         else:
             conexion = ConexionBD()
-            conexion.conectar(appstruct['comunidad'],appstruct['provincia'],appstruct['ciudad'])
+            conexion.conectar(appstruct['dni'],appstruct['nombre'],appstruct['apellidos'],appstruct['comunidad'], appstruct['provincia'], appstruct['ciudad'], appstruct['direccion'], appstruct['asignatura'],appstruct['nota'])
             conexion.cerrar()
             valores = appstruct['nombre'] + " " + appstruct['apellidos'] + ". " + appstruct['comunidad'] + " - " + appstruct['provincia'] + " - " + appstruct['ciudad']
             template_values['form'] = valores  + ' <a href="http://localhost:8080">Volver</a>'
